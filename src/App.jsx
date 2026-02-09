@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
 import papers10000 from './papers.json'
 import papers1000 from './papers1000.json'
 import './App.css'
@@ -223,7 +224,7 @@ function selectNextTerm(usedTerms, currentDifficulty, allTerms) {
   return candidates[Math.floor(Math.random() * candidates.length)]
 }
 
-async function makeIntuitive(title, abstract, calibrationData, misunderstandingSummaries = []) {
+async function makeIntuitive(title, abstract, calibrationData, misunderstandingSummaries = [], onChunk = null) {
   // Build context from actual term ratings
   const knowledgeContext = calibrationData
     .map(({ term, rating }) => `- "${term}": ${rating}/10 familiarity`)
@@ -277,15 +278,51 @@ Respond in this exact format:
 SIMPLE TITLE: [your simplified title]
 SIMPLE ABSTRACT: [your simplified abstract, 3-4 sentences max, with explicit explanations where needed]`
       }],
-      max_tokens: 500
+      max_tokens: 500,
+      stream: true
     })
   })
 
-  const data = await response.json()
-  const content = data.choices[0].message.content
+  const reader = response.body.getReader()
+  const decoder = new TextDecoder()
+  let fullContent = ''
 
-  const titleMatch = content.match(/SIMPLE TITLE:\s*(.+)/i)
-  const abstractMatch = content.match(/SIMPLE ABSTRACT:\s*(.+)/is)
+  while (true) {
+    const { done, value } = await reader.read()
+    if (done) break
+
+    const chunk = decoder.decode(value, { stream: true })
+    const lines = chunk.split('\n').filter(line => line.trim() !== '')
+
+    for (const line of lines) {
+      if (line.startsWith('data: ')) {
+        const data = line.slice(6)
+        if (data === '[DONE]') continue
+
+        try {
+          const parsed = JSON.parse(data)
+          const content = parsed.choices?.[0]?.delta?.content
+          if (content) {
+            fullContent += content
+            // Parse current content to extract title and abstract so far
+            if (onChunk) {
+              const titleMatch = fullContent.match(/SIMPLE TITLE:\s*(.+?)(?=SIMPLE ABSTRACT:|$)/is)
+              const abstractMatch = fullContent.match(/SIMPLE ABSTRACT:\s*(.+)/is)
+              onChunk({
+                title: titleMatch ? titleMatch[1].trim() : '',
+                abstract: abstractMatch ? abstractMatch[1].trim() : ''
+              })
+            }
+          }
+        } catch (e) {
+          // Skip malformed chunks
+        }
+      }
+    }
+  }
+
+  const titleMatch = fullContent.match(/SIMPLE TITLE:\s*(.+?)(?=SIMPLE ABSTRACT:|$)/is)
+  const abstractMatch = fullContent.match(/SIMPLE ABSTRACT:\s*(.+)/is)
 
   return {
     title: titleMatch ? titleMatch[1].trim() : title,
@@ -528,6 +565,7 @@ function CalibrationModal({ onComplete, onClose }) {
 function IntuitiveModal({ paper, calibrationData, misunderstandingSummaries, onClose, onAddMisunderstanding }) {
   const [loading, setLoading] = useState(true)
   const [simplified, setSimplified] = useState(null)
+  const [streamingSimplified, setStreamingSimplified] = useState({ title: '', abstract: '' })
   const [error, setError] = useState(null)
   const [chatHistory, setChatHistory] = useState([])
   const [chatInput, setChatInput] = useState('')
@@ -537,7 +575,15 @@ function IntuitiveModal({ paper, calibrationData, misunderstandingSummaries, onC
   const chatEndRef = useRef(null)
 
   useEffect(() => {
-    makeIntuitive(paper.title, paper.abstract, calibrationData, misunderstandingSummaries)
+    makeIntuitive(
+      paper.title,
+      paper.abstract,
+      calibrationData,
+      misunderstandingSummaries,
+      (partialResult) => {
+        setStreamingSimplified(partialResult)
+      }
+    )
       .then(result => {
         setSimplified(result)
         setLoading(false)
@@ -612,23 +658,23 @@ function IntuitiveModal({ paper, calibrationData, misunderstandingSummaries, onC
       <div className="modal intuitive-modal">
         <h2>Simplified Version</h2>
 
-        {loading && <div className="loading">Simplifying based on your knowledge profile...</div>}
+        {loading && !streamingSimplified.title && <div className="loading">Simplifying based on your knowledge profile...</div>}
 
         {error && <div className="error">Error: {error}</div>}
 
-        {simplified && (
+        {(simplified || streamingSimplified.title) && (
           <>
             <div className="simplified-section">
               <label>Original Title</label>
               <p className="original">{paper.title}</p>
             </div>
             <div className="simplified-section">
-              <label>Simplified Title</label>
-              <p className="simplified">{simplified.title}</p>
+              <label>Simplified Title {loading && <span className="streaming-indicator">●</span>}</label>
+              <p className={`simplified ${loading ? 'streaming' : ''}`}>{simplified?.title || streamingSimplified.title}</p>
             </div>
             <div className="simplified-section">
-              <label>Simplified Abstract</label>
-              <p className="simplified">{simplified.abstract}</p>
+              <label>Simplified Abstract {loading && <span className="streaming-indicator">●</span>}</label>
+              <p className={`simplified ${loading ? 'streaming' : ''}`}>{simplified?.abstract || streamingSimplified.abstract || (loading ? 'Generating...' : '')}</p>
             </div>
 
             {/* Chat Section */}
@@ -696,6 +742,7 @@ function IntuitiveModal({ paper, calibrationData, misunderstandingSummaries, onC
 }
 
 function App() {
+  const navigate = useNavigate()
   const [dataset, setDataset] = useState('10000')
   const [sortBy, setSortBy] = useState('citations')
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE)
@@ -786,7 +833,7 @@ function App() {
     <div className="app">
       <header className="header">
         <div className="header-content">
-          <h1>Research Papers Explorer</h1>
+          <h1>Research Papers Explained at Your Level</h1>
           <p className="tagline">Discover the most influential papers in AI & ML</p>
         </div>
       </header>
@@ -891,32 +938,28 @@ function App() {
 
       <main className="papers-grid" key={`${dataset}-${sortBy}-${selectedVenue || 'all'}`}>
         {visiblePapers.map((paper, index) => (
-          <article key={paper.paperId} className="paper-card">
+          <article
+            key={paper.paperId}
+            className="paper-card clickable"
+            onClick={() => {
+              if (calibrationData) {
+                navigate(`/paper/${paper.paperId}`)
+              } else {
+                setShowCalibration(true)
+              }
+            }}
+          >
             <div className="card-header">
               <span className="rank">#{index + 1}</span>
               <span className="year">{paper.year}</span>
             </div>
 
-            <h2 className="title">
-              <a href={paper.url} target="_blank" rel="noopener noreferrer">
-                {paper.title}
-              </a>
-            </h2>
+            <h2 className="title">{paper.title}</h2>
 
             <div className="venue">{paper.venue}</div>
 
-            <div
-              className={`abstract ${expandedPaperId === paper.paperId ? 'expanded' : ''}`}
-              onClick={() => setExpandedPaperId(
-                expandedPaperId === paper.paperId ? null : paper.paperId
-              )}
-            >
+            <div className="abstract">
               <p>{paper.abstract || 'Abstract not available.'}</p>
-              {paper.abstract && paper.abstract.length > 200 && (
-                <span className="expand-hint">
-                  {expandedPaperId === paper.paperId ? 'Click to collapse' : 'Click to expand'}
-                </span>
-              )}
             </div>
 
             <div className="card-footer">
@@ -925,19 +968,6 @@ function App() {
                 {paper.authors.length > 3 && ` +${paper.authors.length - 3} more`}
               </div>
               <div className="card-actions">
-                <button
-                  className="intuitive-btn"
-                  onClick={() => {
-                    if (!calibrationData) {
-                      setShowCalibration(true)
-                    } else {
-                      setIntuitiveTarget(paper)
-                    }
-                  }}
-                  title={calibrationData ? 'Simplify for your level' : 'Calibrate first'}
-                >
-                  Make Intuitive
-                </button>
                 <div className="citations">
                   <span>{paper.citationCount.toLocaleString()} citations</span>
                 </div>

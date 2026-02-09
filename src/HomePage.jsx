@@ -18,9 +18,7 @@ function HomePage() {
                     </h1>
 
                     <p className="hero-subtitle">
-                        Browse 10,000+ top papers from NeurIPS, ICML, CVPR, and more.
-                        <br />
-                        Personalized explanations tailored to your knowledge level.
+                        Browse over 1,000 top papers from NeurIPS, ICML, CVPR, and more with personalized explanations tailored to your knowledge level.
                     </p>
 
                     <Link to="/app" className="cta-button">

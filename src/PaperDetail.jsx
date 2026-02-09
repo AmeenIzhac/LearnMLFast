@@ -339,13 +339,7 @@ function PaperDetail() {
                         {loading && <span className="generating-badge">Generating...</span>}
                     </div>
                     <div className="pane-content">
-                        {loading ? (
-                            <div className="generating-animation">
-                                <div className="shimmer-block title-shimmer"></div>
-                                <div className="shimmer-block abstract-shimmer"></div>
-                                <div className="shimmer-block abstract-shimmer short"></div>
-                            </div>
-                        ) : simplified ? (
+                        {simplified ? (
                             <>
                                 <h1 className="paper-title simplified-title">{simplified.title}</h1>
                                 <div className="paper-abstract">
@@ -391,10 +385,14 @@ function PaperDetail() {
                                     </div>
                                 </div>
                             </>
-                        ) : streamingSimplified ? (
+                        ) : loading ? (
                             <>
-                                <div className="paper-abstract streaming-abstract">
-                                    <p className="streaming-text">{streamingSimplified}</p>
+                                <h1 className="paper-title simplified-title">
+                                    {(streamingSimplified?.match(/SIMPLE TITLE:\s*(.+?)(?=\n|SIMPLE ABSTRACT|$)/is)?.[1]?.trim()) || '\u00A0'}
+                                </h1>
+                                <div className="paper-abstract">
+                                    <h3>Simplified Abstract</h3>
+                                    <p>{streamingSimplified ? (streamingSimplified.match(/SIMPLE ABSTRACT:\s*(.+)/is)?.[1]?.trim() || '') : ''}</p>
                                 </div>
                             </>
                         ) : null}

@@ -242,11 +242,10 @@
     color: #333;
 }
 
-.streaming-text::after {
-    content: '▊';
-    animation: blink 1s infinite;
-    margin-left: 2px;
-    color: #0f3460;
+.streaming-indicator {
+    color: #6366f1;
+    animation: pulse 1s ease-in-out infinite;
+    margin-left: 0.5rem;
 }
 
 /* Chat Section in Detail Page */

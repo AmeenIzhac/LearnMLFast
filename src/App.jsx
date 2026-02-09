@@ -899,12 +899,6 @@ function App() {
       <div className="venue-filter">
         <div className="venue-filter-header">
           <span className="venue-filter-label">Filter by Venue</span>
-          <button
-            className="venue-info-toggle"
-            onClick={() => setShowVenueInfo(!showVenueInfo)}
-          >
-            {showVenueInfo ? 'Hide info' : 'Show info'}
-          </button>
         </div>
         <div className="venue-pills">
           <button

@@ -24,11 +24,10 @@ async function makeIntuitive(title, abstract, calibrationData, misunderstandingS
         ? `\n\nPREVIOUS MISUNDERSTANDINGS (from this session's clarification chats):\n${misunderstandingSummaries.map((s, i) => `${i + 1}. ${s}`).join('\n')}\n\nUse these insights to provide even clearer explanations.`
         : ''
 
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    const response = await fetch('https://streamintuitive-cwcoz5x4wq-uc.a.run.app', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${import.meta.env.VITE_OPENAI_API_KEY}`
+            'Content-Type': 'application/json'
         },
         body: JSON.stringify({
             model: 'gpt-4o',
@@ -125,11 +124,10 @@ Answer the user's clarification questions concisely. Be helpful and educational.
         { role: 'user', content: userMessage }
     ]
 
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    const response = await fetch('https://streamintuitive-cwcoz5x4wq-uc.a.run.app', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${import.meta.env.VITE_OPENAI_API_KEY}`
+            'Content-Type': 'application/json'
         },
         body: JSON.stringify({
             model: 'gpt-4o',

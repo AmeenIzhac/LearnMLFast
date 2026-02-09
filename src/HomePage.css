@@ -1,349 +1,166 @@
-/* Home Page Styles */
+/* Home Page - OASIS-inspired minimal style */
 .home-page {
     min-height: 100vh;
-    background: linear-gradient(180deg, #fafafa 0%, #f0f4ff 100%);
+    background: #fff;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 /* Hero Section */
 .hero {
-    padding: 6rem 2rem 4rem;
-    max-width: 1200px;
-    margin: 0 auto;
+    padding: 10vh 8vw 6vh;
     display: grid;
-    grid-template-columns: 1.2fr 1fr;
+    grid-template-columns: 1fr 1fr;
     gap: 4rem;
     align-items: center;
+    max-width: 1400px;
+    margin: 0 auto;
 }
 
 .hero-content {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
+    max-width: 600px;
 }
 
 .hero-title {
-    font-size: 3.5rem;
-    font-weight: 800;
-    color: #1a1a2e;
+    font-size: clamp(2.5rem, 5vw, 4rem);
     line-height: 1.1;
+    margin-bottom: 2rem;
     letter-spacing: -0.03em;
 }
 
+.hero-title .light {
+    font-weight: 300;
+    color: #9ca3af;
+}
+
+.hero-title .bold {
+    font-weight: 700;
+    color: #111827;
+}
+
 .hero-subtitle {
-    font-size: 1.25rem;
-    color: #666;
-    line-height: 1.6;
-    max-width: 480px;
+    font-size: 1.1rem;
+    line-height: 1.7;
+    color: #4b5563;
+    margin-bottom: 2.5rem;
 }
 
 .cta-button {
     display: inline-flex;
     align-items: center;
-    gap: 0.75rem;
-    padding: 1rem 2rem;
-    background: linear-gradient(135deg, #1a1a2e 0%, #0f3460 100%);
+    gap: 0.6rem;
+    padding: 0.9rem 1.6rem;
+    background: #3b82f6;
     color: #fff;
-    font-size: 1.1rem;
-    font-weight: 600;
+    font-size: 0.95rem;
+    font-weight: 500;
     text-decoration: none;
-    border-radius: 12px;
-    border: none;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    width: fit-content;
-    box-shadow: 0 4px 20px rgba(15, 52, 96, 0.3);
+    border-radius: 50px;
+    transition: all 0.2s ease;
 }
 
 .cta-button:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 30px rgba(15, 52, 96, 0.4);
+    background: #2563eb;
+    transform: translateY(-1px);
 }
 
 .cta-button svg {
-    transition: transform 0.3s ease;
-}
-
-.cta-button:hover svg {
-    transform: translateX(4px);
-}
-
-/* Hero Visual - Floating Cards */
-.hero-visual {
-    position: relative;
-    height: 400px;
-}
-
-.floating-card {
-    position: absolute;
-    background: #fff;
-    padding: 1.5rem 2rem;
-    border-radius: 16px;
-    box-shadow: 0 15px 50px rgba(15, 52, 96, 0.15);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-    font-weight: 600;
-    font-size: 0.95rem;
-    color: #444;
-    animation: float 6s ease-in-out infinite;
-    border: 1px solid rgba(15, 52, 96, 0.08);
-    min-width: 140px;
-    text-align: center;
-}
-
-.card-number {
-    font-size: 2rem;
-    font-weight: 800;
-    color: #0f3460;
-    background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
-    padding: 0.5rem 1rem;
-    border-radius: 10px;
-    letter-spacing: -0.02em;
-}
-
-.card-1 {
-    top: 5%;
-    left: 5%;
-    animation-delay: 0s;
-}
-
-.card-2 {
-    top: 35%;
-    right: 0%;
-    animation-delay: 1s;
-}
-
-.card-3 {
-    bottom: 10%;
-    left: 15%;
-    animation-delay: 2s;
-}
-
-@keyframes float {
-
-    0%,
-    100% {
-        transform: translateY(0px);
-    }
-
-    50% {
-        transform: translateY(-15px);
-    }
-}
-
-/* Features Section */
-.features {
-    padding: 5rem 2rem;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-.section-title {
-    font-size: 2.25rem;
-    font-weight: 700;
-    color: #1a1a2e;
-    text-align: center;
-    margin-bottom: 3rem;
-    letter-spacing: -0.02em;
-}
-
-.features-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1.5rem;
-}
-
-.feature-card {
-    background: #fff;
-    padding: 2rem;
-    border-radius: 16px;
-    border: 1px solid #eee;
-    transition: all 0.3s ease;
-}
-
-.feature-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
-    border-color: #0f3460;
-}
-
-.feature-icon {
-    width: 64px;
-    height: 64px;
-    background: linear-gradient(135deg, #e0e7ff 0%, #f0f4ff 100%);
-    border-radius: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 1.25rem;
-    color: #0f3460;
-}
-
-.feature-card h3 {
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: #1a1a2e;
-    margin-bottom: 0.75rem;
-}
-
-.feature-card p {
-    font-size: 0.9rem;
-    color: #666;
-    line-height: 1.6;
-}
-
-/* Venues Section */
-.venues-section {
-    padding: 4rem 2rem;
-    background: #fff;
-    text-align: center;
-}
-
-.venues-list {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 1rem;
-    max-width: 800px;
-    margin: 0 auto;
-}
-
-.venue-badge {
-    padding: 0.75rem 1.5rem;
-    border-radius: 25px;
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: #fff;
     transition: transform 0.2s ease;
 }
 
-.venue-badge:hover {
-    transform: scale(1.05);
+.cta-button:hover svg {
+    transform: translateX(3px);
 }
 
-.venue-badge.neurips {
-    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+/* Hero Image */
+.hero-image {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.venue-badge.icml {
-    background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%);
+.hero-image img {
+    max-width: 100%;
+    width: 100%;
+    height: auto;
+    max-height: 650px;
+    object-fit: contain;
+    border-radius: 8px;
 }
 
-.venue-badge.iclr {
-    background: linear-gradient(135deg, #a855f7 0%, #c084fc 100%);
+/* What Section */
+.what-section {
+    padding: 6rem 8vw;
+    border-top: 1px solid #f3f4f6;
 }
 
-.venue-badge.cvpr {
-    background: linear-gradient(135deg, #ec4899 0%, #f472b6 100%);
+.section-label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    color: #9ca3af;
+    margin-bottom: 3rem;
 }
 
-.venue-badge.iccv {
-    background: linear-gradient(135deg, #f43f5e 0%, #fb7185 100%);
+.features-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3rem;
 }
 
-.venue-badge.acl {
-    background: linear-gradient(135deg, #22c55e 0%, #4ade80 100%);
+.feature-item h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 0.75rem;
 }
 
-.venue-badge.emnlp {
-    background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
-}
-
-.venue-badge.aaai {
-    background: linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%);
-}
-
-/* CTA Section */
-.cta-section {
-    padding: 5rem 2rem;
-    text-align: center;
-    background: linear-gradient(135deg, #1a1a2e 0%, #0f3460 100%);
-    color: #fff;
-}
-
-.cta-section h2 {
-    font-size: 2.5rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
-}
-
-.cta-section p {
-    font-size: 1.1rem;
-    opacity: 0.9;
-    margin-bottom: 2rem;
-}
-
-.cta-large {
-    background: #fff;
-    color: #1a1a2e;
-    padding: 1.25rem 2.5rem;
-    font-size: 1.2rem;
-}
-
-.cta-large:hover {
-    background: #f0f4ff;
-}
-
-/* Footer */
-.footer {
-    padding: 2rem;
-    text-align: center;
-    color: #888;
-    font-size: 0.9rem;
+.feature-item p {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #6b7280;
 }
 
 /* Responsive */
-@media (max-width: 1024px) {
+@media (max-width: 900px) {
     .hero {
         grid-template-columns: 1fr;
-        text-align: center;
         gap: 3rem;
+        text-align: center;
     }
 
     .hero-content {
-        align-items: center;
-    }
-
-    .hero-subtitle {
         max-width: 100%;
     }
 
-    .hero-visual {
-        height: 250px;
-        display: flex;
-        justify-content: center;
-        gap: 1rem;
+    .hero-image img {
+        max-height: 350px;
     }
 
-    .floating-card {
-        position: static;
-        animation: none;
-    }
-
-    .features-grid {
-        grid-template-columns: repeat(2, 1fr);
+    .cta-button {
+        margin: 0 auto;
     }
 }
 
 @media (max-width: 768px) {
+    .hero {
+        padding: 6vh 6vw 4vh;
+    }
+
     .hero-title {
-        font-size: 2.5rem;
+        font-size: 2rem;
     }
 
     .hero-subtitle {
-        font-size: 1.1rem;
+        font-size: 1rem;
     }
 
-    .features-grid {
+    .what-section {
+        padding: 4rem 6vw;
+    }
+
+    .features-row {
         grid-template-columns: 1fr;
-    }
-
-    .hero-visual {
-        flex-wrap: wrap;
-    }
-
-    .cta-section h2 {
-        font-size: 1.75rem;
+        gap: 2rem;
     }
 }

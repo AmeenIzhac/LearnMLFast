@@ -703,7 +703,11 @@ function App() {
     const saved = localStorage.getItem('calibrationData')
     return saved ? JSON.parse(saved) : null
   })
-  const [showCalibration, setShowCalibration] = useState(false)
+  const [showCalibration, setShowCalibration] = useState(() => {
+    // Automatically show calibration if no saved data exists
+    const saved = localStorage.getItem('calibrationData')
+    return !saved
+  })
   const [intuitiveTarget, setIntuitiveTarget] = useState(null)
   const [expandedPaperId, setExpandedPaperId] = useState(null)
   const [selectedVenue, setSelectedVenue] = useState(null)
@@ -716,7 +720,9 @@ function App() {
     console.log('Added misunderstanding summary:', summary)
   }
 
-  const papers = dataset === '10000' ? papers10000 : papers1000
+  const papers = useMemo(() => {
+    return dataset === '10000' ? papers10000 : papers1000
+  }, [dataset])
 
   // Get unique venues from papers
   const venues = useMemo(() => {
@@ -783,12 +789,6 @@ function App() {
           <h1>Research Papers Explorer</h1>
           <p className="tagline">Discover the most influential papers in AI & ML</p>
         </div>
-        <button
-          className="calibrate-btn"
-          onClick={() => setShowCalibration(true)}
-        >
-          {calibrationData ? `Calibrated (avg: ${avgRating}/10)` : 'Calibrate'}
-        </button>
       </header>
 
       <div className="controls">
@@ -824,6 +824,18 @@ function App() {
               onClick={() => handleSortChange('date-new')}
             >
               Newest
+            </button>
+          </div>
+        </div>
+
+        <div className="control-group">
+          <label>Calibration</label>
+          <div className="button-group">
+            <button
+              className={calibrationData ? 'active' : ''}
+              onClick={() => setShowCalibration(true)}
+            >
+              {calibrationData ? `Avg: ${avgRating}/10` : 'Calibrate'}
             </button>
           </div>
         </div>
@@ -877,7 +889,7 @@ function App() {
         )}
       </div>
 
-      <main className="papers-grid">
+      <main className="papers-grid" key={`${dataset}-${sortBy}-${selectedVenue || 'all'}`}>
         {visiblePapers.map((paper, index) => (
           <article key={paper.paperId} className="paper-card">
             <div className="card-header">
@@ -924,13 +936,10 @@ function App() {
                   }}
                   title={calibrationData ? 'Simplify for your level' : 'Calibrate first'}
                 >
-                  ✨ Make Intuitive
+                  Make Intuitive
                 </button>
                 <div className="citations">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M12 20V10M18 20V4M6 20v-4" />
-                  </svg>
-                  <span>{paper.citationCount.toLocaleString()}</span>
+                  <span>{paper.citationCount.toLocaleString()} citations</span>
                 </div>
               </div>
             </div>

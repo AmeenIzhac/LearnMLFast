@@ -684,6 +684,14 @@ body {
   display: inline-block;
   padding: 0.25rem 0.75rem;
   border-radius: 20px;
+  margin-bottom: 0.5rem;
+}
+
+.single-term .reveal-definition-btn,
+.single-term .term-definition {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .rating-section {
